@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 
 from scoring.models import ScoringModel, get_model
+from scoring.metrics import calculate_metrics
+from scoring.recommendation import recommend
 
 
 MAX_MONEY_RUB = 1_000_000_000_000
@@ -56,10 +58,18 @@ def validate_request(data: object) -> ScoringFeatures:
     return ScoringFeatures(**{name: data[name] for name in ScoringFeatures.__dataclass_fields__})
 
 
-def score_application(request: object, model: ScoringModel | None = None) -> dict[str, int]:
-    """Return only a score; all credit decisions belong to the backend."""
+def score_application(request: object, model: ScoringModel | None = None) -> dict:
+    """Return a score, factors and a preliminary recommendation for the backend."""
     features = validate_request(request)
     score = (model or get_model()).predict_score(features)
     if isinstance(score, bool) or not isinstance(score, int) or not 0 <= score <= 100:
         raise ValueError("The scoring model must return an integer from 0 to 100.")
-    return {"score": score}
+    metrics = calculate_metrics(features)
+    decision, approved_amount, reasons = recommend(features, metrics)
+    return {
+        "decision": decision,
+        "score": score,
+        "approved_amount": approved_amount,
+        "reasons": reasons,
+        "factors": metrics.response_factors(),
+    }

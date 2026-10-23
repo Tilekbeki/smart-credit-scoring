@@ -17,9 +17,13 @@ class ContractTests(unittest.TestCase):
 
         self.assertEqual(set(request["required"]), {"application_id", *ScoringFeatures.__dataclass_fields__})
         self.assertFalse(request["additionalProperties"])
-        self.assertEqual(response["required"], ["score"])
-        self.assertEqual(set(response["properties"]), {"score"})
+        self.assertEqual(set(response["required"]), {"decision", "score", "approved_amount", "reasons", "factors"})
+        self.assertEqual(set(response["properties"]), set(response["required"]))
         self.assertFalse(response["additionalProperties"])
+        factors = response["properties"]["factors"]
+        self.assertFalse(factors["additionalProperties"])
+        self.assertEqual(set(factors["required"]), set(factors["properties"]))
+        self.assertEqual(response["properties"]["decision"]["enum"], ["approved", "counter_offer", "rejected"])
         self.assertEqual(response["properties"]["score"]["minimum"], 0)
         self.assertEqual(response["properties"]["score"]["maximum"], 100)
         self.assertEqual(openapi["openapi"], "3.1.0")

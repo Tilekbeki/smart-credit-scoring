@@ -37,8 +37,8 @@
     },
     "/v1/score": {
       "post": {
-        "summary": "Compute risk score",
-        "description": "Higher score means lower estimated risk. This route does not approve or reject an application.",
+        "summary": "Compute risk score and recommendation",
+        "description": "Returns a score, calculated factors and a preliminary recommendation. The backend owns the final credit decision.",
         "requestBody": {
           "required": true,
           "content": {
@@ -51,7 +51,7 @@
         },
         "responses": {
           "200": {
-            "description": "Score only",
+            "description": "Score, factors, reasons and preliminary recommendation",
             "content": {
               "application/json": {
                 "schema": {
