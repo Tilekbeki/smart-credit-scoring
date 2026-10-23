@@ -1,0 +1,5 @@
+The scoring service uses Python 3.12 standard-library modules only.
+Its Docker image uses the official Python 3.12.10 slim image.
+No third-party Python packages, ML models, datasets, or paid APIs are required.
+Company and credit-bureau inputs are synthetic; FNS and BKI integrations are
+simulated by the surrounding application, not by this service.
