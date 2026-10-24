@@ -1,0 +1,11 @@
+{
+  "generator_version": "synthetic_cashflow_v1",
+  "python_version": "3.13.11",
+  "seed": 20261024,
+  "train_size": 20000,
+  "test_size": 5000,
+  "train_default_rate": 0.3347,
+  "test_default_rate": 0.3414,
+  "target": "default_12m: at least two of the next 12 months lack cash for existing and requested-loan payments",
+  "note": "Entirely synthetic simulation; not real borrower outcomes."
+}

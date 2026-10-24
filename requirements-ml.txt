@@ -1,0 +1,2 @@
+# Offline training only. Online inference uses Python's standard library.
+scikit-learn==1.9.1

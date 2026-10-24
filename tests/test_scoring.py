@@ -1,11 +1,13 @@
 from email.message import Message
 from io import BytesIO
 import json
+import os
 import unittest
 from unittest.mock import patch
 
 from scoring.app import Handler
 from scoring.metrics import annuity_payment
+from scoring.models import get_model
 from scoring.service import ValidationError, score_application, validate_request
 
 
@@ -137,6 +139,17 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(set(response), {"decision", "score", "approved_amount", "reasons", "factors"})
         self.assertEqual(response["score"], 100)
         self.assertIn("application/json", headers["Content-Type"])
+
+    def test_http_with_logistic_model(self):
+        with patch.dict(os.environ, {"SCORING_MODEL": "logreg_v1"}):
+            get_model.cache_clear()
+            try:
+                status, response, _ = self.request("POST", "/v1/score", SHOP)
+            finally:
+                get_model.cache_clear()
+        self.assertEqual(status, 200)
+        self.assertEqual(response["score"], 97)
+        self.assertEqual(response["decision"], "approved")
 
     def test_input_errors(self):
         self.assertEqual(self.request("POST", "/v1/score", {**SHOP, "term_months": 0})[0], 422)

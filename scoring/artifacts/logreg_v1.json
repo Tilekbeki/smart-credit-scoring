@@ -1,0 +1,63 @@
+{
+  "model_version": "logreg_v1",
+  "target": "default_12m",
+  "feature_names": [
+    "log_monthly_revenue_millions",
+    "operating_margin",
+    "debt_service_share",
+    "existing_debt_to_annual_revenue",
+    "overdue_count",
+    "requested_to_annual_revenue",
+    "term_years"
+  ],
+  "mean": [
+    1.107213925915532,
+    0.2768809407212228,
+    1.0026895268384768,
+    0.1923467242966426,
+    0.17175,
+    0.10441663271336636,
+    2.721575
+  ],
+  "scale": [
+    0.5126182606766575,
+    0.1322538852210161,
+    1.2887141709739889,
+    0.20296642110599056,
+    0.5452081597885866,
+    0.06274063346157245,
+    1.1964393086884373
+  ],
+  "coef": [
+    -0.009948604015615613,
+    -1.2747130308513202,
+    1.1662390072171807,
+    0.9251499293760638,
+    0.7676275929427839,
+    0.29401980005590717,
+    -0.2006404591201038
+  ],
+  "intercept": -0.7572949078950517,
+  "training": {
+    "python_version": "3.13.11",
+    "sklearn_version": "1.9.1",
+    "generator_version": "synthetic_cashflow_v1",
+    "train_sha256": "45f1f15f05a3671b6a30f35b6e4a177080b9884714555bf39713b3f243904a46",
+    "test_sha256": "cce450202dd6b13d9f9c5c46f8b2ca5125ea8db7edbfe2743d2abf5d3c02bfd0",
+    "train_metrics": {
+      "n": 20000,
+      "default_rate": 0.3347,
+      "roc_auc": 0.915802,
+      "brier": 0.108172,
+      "baseline_brier": 0.222676
+    },
+    "test_metrics": {
+      "n": 5000,
+      "default_rate": 0.3414,
+      "roc_auc": 0.909595,
+      "brier": 0.114287,
+      "baseline_brier": 0.224846
+    },
+    "inference_parity_max_abs_diff": 2.220446049250313e-16
+  }
+}
