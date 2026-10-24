@@ -2,7 +2,6 @@
 
 import argparse
 import csv
-import hashlib
 import json
 import math
 from pathlib import Path
@@ -16,6 +15,7 @@ from sklearn.preprocessing import StandardScaler
 
 from scoring.ml_features import FEATURE_NAMES, feature_vector
 from scoring.service import ScoringFeatures
+from training.data_hash import dataset_sha256
 
 
 def read_dataset(path: Path) -> tuple[list[list[float]], list[int]]:
@@ -31,10 +31,6 @@ def read_dataset(path: Path) -> tuple[list[list[float]], list[int]]:
     if len(vectors) < 2 or set(labels) != {0, 1}:
         raise ValueError(f"Dataset {path} must have both target classes and at least two rows")
     return vectors, labels
-
-
-def file_sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def metrics(labels: list[int], probabilities) -> dict[str, float]:
@@ -74,8 +70,8 @@ def main() -> None:
             "python_version": platform.python_version(),
             "sklearn_version": sklearn.__version__,
             "generator_version": json.loads((args.data_dir / "generation.json").read_text(encoding="utf-8"))["generator_version"],
-            "train_sha256": file_sha256(train_path),
-            "test_sha256": file_sha256(test_path),
+            "train_sha256": dataset_sha256(train_path),
+            "test_sha256": dataset_sha256(test_path),
             "train_metrics": metrics(train_y, train_probabilities),
             "test_metrics": metrics(test_y, test_probabilities),
         },

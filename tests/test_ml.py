@@ -1,5 +1,4 @@
 import csv
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -10,6 +9,7 @@ from unittest.mock import patch
 from scoring.ml_model import ARTIFACT_PATH, LogisticModel
 from scoring.models import get_model
 from scoring.service import score_application, validate_request
+from training.data_hash import dataset_sha256
 from training.generate_synthetic import generate_file
 
 
@@ -56,8 +56,16 @@ class SyntheticMLTests(unittest.TestCase):
     def test_artifact_tracks_exact_training_files(self):
         artifact = json.loads(ARTIFACT_PATH.read_text(encoding="utf-8"))
         for split in ("train", "test"):
-            digest = hashlib.sha256((DATA_DIR / f"{split}.csv").read_bytes()).hexdigest()
+            digest = dataset_sha256(DATA_DIR / f"{split}.csv")
             self.assertEqual(artifact["training"][f"{split}_sha256"], digest)
+
+    def test_dataset_hash_ignores_checkout_line_endings(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            lf = Path(directory) / "lf.csv"
+            crlf = Path(directory) / "crlf.csv"
+            lf.write_bytes(b"a,b\n1,2\n")
+            crlf.write_bytes(b"a,b\r\n1,2\r\n")
+            self.assertEqual(dataset_sha256(lf), dataset_sha256(crlf))
 
     def test_ml_score_responds_to_financial_risk(self):
         model = LogisticModel()
