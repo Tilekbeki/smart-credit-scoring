@@ -19,7 +19,7 @@ def get_model() -> ScoringModel:
     from scoring.rules import RuleBasedModel
     from scoring.ml_model import LogisticModel
 
-    model_name = os.environ.get("SCORING_MODEL", "rules_v1")
+    model_name = os.environ.get("SCORING_MODEL", "logreg_v1")
     registry = {"rules_v1": RuleBasedModel, "logreg_v1": LogisticModel}
     if model_name not in registry:
         raise ValueError(f"Unknown SCORING_MODEL: {model_name}")

@@ -27,14 +27,14 @@ python -m training.train_logreg
 
 `training/train_logreg.py` сохраняет коэффициенты, названия и порядок признаков, параметры стандартизации, SHA-256 обучающих файлов и метрики в `scoring/artifacts/logreg_v1.json`. Перед хешированием окончания строк CSV приводятся к LF, чтобы одна и та же таблица имела одинаковый хеш после checkout на Windows и Linux. Сервис читает JSON стандартной библиотекой Python. Прогноз `p` получается логистической функцией; `score = round(100 × (1 − p))`. Шкала согласована лишь с синтетическим миром генератора. Условия `decision`, `approved_amount` и `reasons` вычисляются отдельной политикой из тех же входных показателей и не зависят от выбора модели балла.
 
-Включение модели в PowerShell:
+Модель `logreg_v1` включена по умолчанию. Явно выбрать её в PowerShell можно так:
 
 ```powershell
 $env:SCORING_MODEL = "logreg_v1"
 python -m scoring.app
 ```
 
-В Unix-подобной оболочке: `SCORING_MODEL=logreg_v1 python -m scoring.app`. Для контейнера передайте `-e SCORING_MODEL=logreg_v1`. По умолчанию остаётся `rules_v1`.
+В Unix-подобной оболочке: `SCORING_MODEL=logreg_v1 python -m scoring.app`. Для возврата к правилам задайте `SCORING_MODEL=rules_v1` у сервиса scoring, в том числе через `docker run -e SCORING_MODEL=rules_v1`.
 
 ## Результат на отдельной тестовой выборке
 

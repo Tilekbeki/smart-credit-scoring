@@ -8,6 +8,7 @@ from unittest.mock import patch
 from scoring.app import Handler
 from scoring.metrics import annuity_payment
 from scoring.models import get_model
+from scoring.rules import RuleBasedModel
 from scoring.service import ValidationError, score_application, validate_request
 
 
@@ -26,7 +27,7 @@ SHOP = {
 class ScoringTests(unittest.TestCase):
     def test_score_and_recommendation_are_deterministic(self):
         result = score_application(SHOP)
-        self.assertEqual(result["score"], 100)
+        self.assertEqual(result["score"], 97)
         self.assertEqual(result["decision"], "approved")
         self.assertEqual(result["approved_amount"], SHOP["requested_amount"])
         self.assertTrue(result["reasons"])
@@ -40,6 +41,9 @@ class ScoringTests(unittest.TestCase):
         self.assertLess(score_application({**SHOP, "monthly_expenses": 2_300_000})["score"], baseline)
         self.assertLess(score_application({**SHOP, "requested_amount": 8_000_000})["score"], baseline)
         self.assertLess(score_application({**SHOP, "existing_debt": 25_000_000})["score"], baseline)
+
+    def test_rules_model_remains_available(self):
+        self.assertEqual(score_application(SHOP, RuleBasedModel())["score"], 100)
 
     def test_counter_offer_is_smaller_and_affordable(self):
         result = score_application({**SHOP, "overdue_count": 1, "requested_amount": 8_000_000})
@@ -137,7 +141,7 @@ class HTTPTests(unittest.TestCase):
         status, response, headers = self.request("POST", "/v1/score", SHOP)
         self.assertEqual(status, 200)
         self.assertEqual(set(response), {"decision", "score", "approved_amount", "reasons", "factors"})
-        self.assertEqual(response["score"], 100)
+        self.assertEqual(response["score"], 97)
         self.assertIn("application/json", headers["Content-Type"])
 
     def test_http_with_logistic_model(self):
